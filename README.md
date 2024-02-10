@@ -13,7 +13,8 @@ npm install dotenv
 --------------------------------------
 
 --------------------------------------
-3. Altere as variáveis do arquivo .env
+3. Renomeie o arquivo .env.example
+   para .env e altere as variáveis do arquivo
 --------------------------------------
 
 --------------------------------------
