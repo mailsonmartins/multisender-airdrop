@@ -46,7 +46,7 @@ async function getArrayAddresses(addresses)
     addresses.forEach((address,i) => {
         arrayAddresses.push({
             "to_address": address,
-            "amount": process.env.AMOUNT_TOKEN_SEND
+            "amount": 0.01
         });
 
         if((i+1) % 100 == 0 || (i+1) == addresses.length){
