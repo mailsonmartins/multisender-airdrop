@@ -10,6 +10,7 @@ npm install @solana/web3.js
 npm install buffer
 npm install @metaplex/js 
 npm install dotenv
+npm install bs58
 --------------------------------------
 
 --------------------------------------
