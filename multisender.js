@@ -13,7 +13,6 @@ const {
 } = require("@solana/web3.js");
 
 const newPair = new Keypair();
-console.log(newPair);
 
 // Storing the wallet credentials
 
@@ -38,7 +37,8 @@ myHeaders.append("Content-Type", "application/json");
 fs.readFile("./holders.json" , "utf8", async function(err, data){
     var addresses = JSON.parse(data);
     var arrayAddresses = await getArrayAddresses(addresses);
-    generateAirDrop(arrayAddresses);
+    var response = generateAirDrop(arrayAddresses);
+    console.log(response);
 });
 
 async function getArrayAddresses(addresses)
@@ -85,16 +85,18 @@ async function airDropTransaction(addresses)
         redirect: 'follow'
     };
     
-    let response = fetch("https://api.shyft.to/sol/v1/token/airdrop", requestOptions)
-        .then(response => response.text())
-        .catch(error => console.log('error', error));
+    let response = await fetch("https://api.shyft.to/sol/v1/token/airdrop", requestOptions);
 
-    return response;
+    return response.text();
 
 }
 
-async function assignTransaction(encodedTransaction)
+async function assignTransaction(response)
 {
+    var objResponse = JSON.parse(response);
+    var result = objResponse.result;
+    var encodedTransaction = JSON.stringify(result.encoded_transaction);
+
     const connection = new Connection(clusterApiUrl(network), 'confirmed');
     const feePayer = Keypair.fromSecretKey(secretKey);
     const wallet = new NodeWallet(feePayer);
