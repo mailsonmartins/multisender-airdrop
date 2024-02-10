@@ -46,7 +46,7 @@ async function getArrayAddresses(addresses)
     addresses.forEach((address,i) => {
         arrayAddresses.push({
             "to_address": address,
-            "amount": 0.001
+            "amount": process.env.AMOUNT_TOKEN_SEND
         });
 
         if((i+1) % 100 == 0 || (i+1) == addresses.length){
@@ -93,22 +93,30 @@ async function assignTransaction(response)
 {
     var objResponse = JSON.parse(response);
     var result = objResponse.result;
-    var encodedTransaction = JSON.stringify(result.encoded_transaction);
+    var encodedTransactions = result.encoded_transaction;
 
     const connection = new Connection(clusterApiUrl(network), 'confirmed');
     const feePayer = Keypair.fromSecretKey(decode(privateKey));
     const wallet = new NodeWallet(feePayer);
 
-    const recoveredTransaction = Transaction.from(
-        Buffer.from(encodedTransaction, 'base64')
-    );
-      
-    recoveredTransaction.partialSign(feePayer);
-    const signedTx = await wallet.signTransaction(recoveredTransaction);
-    const confirmTransaction = await connection.sendRawTransaction(
-        signedTx.serialize()
-    );
-    return confirmTransaction;
+    const recoveredTransactions = encodedTransactions.map((tx) => {
+        return Transaction.from(
+            Buffer.from(tx, 'base64')
+        );
+    });
+
+    const signedTx = await wallet.signAllTransactions(recoveredTransactions);
+    
+    var sentTxns = [];
+    for await(const tx of signedTx)
+    {
+        const confirmTransaction = await connection.sendRawTransaction(
+            tx.serialize()
+        );
+        sentTxns.push(confirmTransaction);
+    }
+
+    return sentTxns;
 }
 
 }
