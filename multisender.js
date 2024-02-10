@@ -3,6 +3,7 @@ multisender = () => {
 const Metaplex = require('@metaplex/js');
 const NodeWallet = Metaplex.NodeWallet;
 require('dotenv').config()
+const bs58 = require('bs58');
 
 const {
     Connection,
@@ -12,18 +13,16 @@ const {
     Transaction
 } = require("@solana/web3.js");
 
-const newPair = new Keypair();
+const newPair = Keypair.generate();
 
 // Storing the wallet credentials
 
-const publicKey = new PublicKey(newPair._keypair.publicKey).toString();
-const secretKey = newPair._keypair.secretKey;
+const publicKey = new PublicKey(newPair.publicKey).toString();
+const secretKey = process.env.SECRET_KEY;
 
 var fs = require("fs");
 
 var Buffer = require('buffer/').Buffer;
-
-console.log(process.env.NETWORK);
 
 const network = process.env.NETWORK;
 const apiKey = process.env.API_KEY;
