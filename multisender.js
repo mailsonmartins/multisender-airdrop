@@ -1,9 +1,8 @@
 multisender = () => {
 
-const Metaplex = require('@metaplex/js');
-const NodeWallet = Metaplex.NodeWallet;
+const {NodeWallet} = require('@metaplex/js');
 require('dotenv').config()
-const bs58 = require('bs58');
+const {decode} = require('bs58');
 
 const {
     Connection,
@@ -18,7 +17,7 @@ const newPair = Keypair.generate();
 // Storing the wallet credentials
 
 const publicKey = new PublicKey(newPair.publicKey).toString();
-const secretKey = process.env.SECRET_KEY;
+const privateKey = process.env.PRIVATE_KEY;
 
 var fs = require("fs");
 
@@ -97,12 +96,14 @@ async function assignTransaction(response)
     var encodedTransaction = JSON.stringify(result.encoded_transaction);
 
     const connection = new Connection(clusterApiUrl(network), 'confirmed');
-    const feePayer = Keypair.fromSecretKey(secretKey);
+    const feePayer = Keypair.fromSecretKey(decode(privateKey));
     const wallet = new NodeWallet(feePayer);
 
     const recoveredTransaction = Transaction.from(
         Buffer.from(encodedTransaction, 'base64')
     );
+      
+    recoveredTransaction.partialSign(feePayer);
     const signedTx = await wallet.signTransaction(recoveredTransaction);
     const confirmTransaction = await connection.sendRawTransaction(
         signedTx.serialize()
