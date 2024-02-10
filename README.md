@@ -18,10 +18,5 @@ npm install dotenv
 --------------------------------------
 
 --------------------------------------
-4. Copie o arquivo json com os enderecos
-para a pasta raiz do projeto
---------------------------------------
-
---------------------------------------
-5. Rode o comando node app.js
+4. Rode o comando node app.js
 --------------------------------------
